@@ -1,68 +1,111 @@
-const Weapons = {
-    Rock: "rock",
-    Paper: "paper",
-    Scissors: "scissors"
+const EnemyAnimals = {
+    Lion: "lion",
+    Eagle: "hawk",
+    Bear: "bear"
 };
+
+const PlayerAnimals = {
+    Badger: "badger",
+    Platypus: "platypus",
+    Penguin: "penguin"
+}
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-function getComputerChoice() {
-    const weaponKeys = Object.keys(Weapons);
-    return Weapons[weaponKeys[Math.floor(Math.random() * weaponKeys.length)]];
+function getEnemyAnimal() {
+    const animalKeys = Object.keys(EnemyAnimals);
+    return EnemyAnimals[animalKeys[Math.floor(Math.random() * animalKeys.length)]];
 }
 
-function playRound(playerSelection, computerSelection) {
-    if (playerSelection === computerSelection) {
-        return `It's a tie! Both players chose ${playerSelection}.`
+function getPlayerAnimal(button) {
+    if (button.classList.contains(PlayerAnimals.Badger)) {
+        return PlayerAnimals.Badger;
     }
-    else if ((playerSelection === Weapons.Rock && computerSelection === Weapons.Scissors) || 
-                (playerSelection === Weapons.Scissors && computerSelection === Weapons.Paper) ||
-                (playerSelection === Weapons.Paper && computerSelection === Weapons.Rock)) {
-        return `You win! ${capitalizeFirstLetter(playerSelection)} beats ${capitalizeFirstLetter(computerSelection)}.`
+    else if (button.classList.contains(PlayerAnimals.Platypus)) {
+        return PlayerAnimals.Platypus;
+    }
+    else if (button.classList.contains(PlayerAnimals.Penguin)) {
+        return PlayerAnimals.Penguin;
+    }
+}
+
+
+function getRoundResults(playerAnimal, enemyAnimal) {
+    if (playerAnimal === PlayerAnimals.Platypus) {
+        return { 
+            text: "You win thanks to the platypus' poisonous claws!",
+            playerWins: true
+          };
+    }
+    else if (playerAnimal === PlayerAnimals.Penguin || (playerAnimal == PlayerAnimals.Badger && enemyAnimal === EnemyAnimals.Eagle)) {
+        return { 
+            text: "You lose!",
+            playerWins: false
+          };
     }
     else {
-        return `You lose! ${capitalizeFirstLetter(computerSelection)} beats ${capitalizeFirstLetter(playerSelection)}.`
+        return { 
+            text: "You win thanks to the Honey Badger ferociousness!",
+            playerWins: true
+          };
     }
 }
 
-function showGameResult(playerVictories, computerVictories) {
-    if (playerVictories > computerVictories) {
-        alert("You won!");
+function playRound(button) {
+    playerButtons.forEach(button => {
+        button.style.backgroundColor = 'gainsboro';
+    });
+    button.style.backgroundColor = "#90EE90";
+
+    let enemyAnimal = getEnemyAnimal();
+    const enemyButton = document.querySelector(`.${enemyAnimal}`);
+    const enemyButtons = document.querySelectorAll(".enemy-button");
+    enemyButtons.forEach(button => {
+        button.style.backgroundColor = 'gainsboro';
+    });
+    enemyButton.style.backgroundColor = "#F08080";
+
+    const roundResult = getRoundResults(getPlayerAnimal(button), enemyAnimal);
+    if (roundResult.playerWins) {
+        victories++;
+    } else {
+        losses++;
+    };
+
+    const partialResult = document.querySelector('.partial-result');
+    partialResult.textContent = `${roundResult.text}. Wins: ${victories}, Losses: ${losses}`;
+
+    if (victories === 5) {
+        const totalResult = document.querySelector('.total-result');
+        totalResult.textContent = "You are a WINNER!!!";
+        totalResult.style.color = "green";
+        disablePlayerButtons();
     }
-    else if (playerVictories < computerVictories) {
-        alert("You lost!");
+    if (losses === 5) {
+        const totalResult = document.querySelector('.total-result');
+        totalResult.textContent = "You are a LOSER!!!";
+        totalResult.style.color = "red";
+        disablePlayerButtons();
     }
-    else {
-        alert("It's a tie!")
-    }
+
 }
 
-function game() {
-    let playerVictories = 0;
-    let computerVictories = 0;
-    for (let i=0; i<5; i++) {
-        let computerSelection = getComputerChoice();
-        let playerSelection = prompt("Choose your weapon (rock, paper or scissors)!").toLowerCase();
-
-        let result = playRound(playerSelection, computerSelection);
-        
-        if (result.includes("win")) {
-            playerVictories++;
-        }
-        else if (result.includes("lose")) {
-            computerVictories++;
-        }
-
-        alert(`${result} Player victories: ${playerVictories}, Computer victories: ${computerVictories}`);
-    }
-
-    showGameResult(playerVictories, computerVictories);
-    
+function disablePlayerButtons() {
+    playerButtons.forEach(button => {
+        button.classList.remove('player-button');
+        button.disabled = true;
+    })
 }
 
-computerSelection = getComputerChoice();
-playerSelection = getComputerChoice();
+let victories = 0;
+let losses = 0;
 
-game();
+const playerButtons = document.querySelectorAll(".player-button");
+
+playerButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        playRound(button);
+    });
+  });
