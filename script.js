@@ -1,6 +1,6 @@
 const EnemyAnimals = {
     Lion: "lion",
-    Eagle: "hawk",
+    Eagle: "eagle",
     Bear: "bear"
 };
 
