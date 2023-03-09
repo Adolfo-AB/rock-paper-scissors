@@ -1,3 +1,3 @@
 # animal colosseum
 
-Dummy project for learning HTML, CSS and vanilla JS.
+Dummy project to learn HTML, CSS and vanilla JS.
